@@ -39,6 +39,14 @@ Goals include the following:
 - Connect to an EVM Chain consumer contract and start making requests to the deployed Phat Function on Phala.
 
 ## What Are Phat Functions?
+> For simplicity, Phat Functions enable you to request any API and send the data to your on-chain smart contract with Javascript/Typescript.
+
+Phat Functions extend the functionalities of smart contracts, enabling them to read and control any existing services/data. 
+
+This means: 
+1) a smart contract can learn about and control smart contracts on other blockchains, even without bridges, making cross-chain easy.
+2) a smart contract can read and control offchain data, like Web2 services, real world assets (RWA), and more.
+
 This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
 
 Try running some of the following tasks:
