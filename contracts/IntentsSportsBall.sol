@@ -5,6 +5,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./PhatRollupAnchor.sol";
 
 contract IntentsSportsBall is PhatRollupAnchor, Ownable {
+    uint256 minBetCost;
+    uint256 sportysTake;
+    event DollaDollaBillsYall(uint256 value);
     event ResponseReceived(uint reqId, string pair, uint256 value);
     event ErrorReceived(uint reqId, string pair, uint256 errno);
 
@@ -16,25 +19,35 @@ contract IntentsSportsBall is PhatRollupAnchor, Ownable {
 
     constructor(address phatAttestor) {
         _grantRole(PhatRollupAnchor.ATTESTOR_ROLE, phatAttestor);
+        minBetCost = 0;
     }
 
     function setAttestor(address phatAttestor) public {
         _grantRole(PhatRollupAnchor.ATTESTOR_ROLE, phatAttestor);
     }
 
-    function request(string calldata profileId) public {
+    function setMinBetCost(uint256 _minBetCost) public onlyOwner {
+        minBetCost = _minBetCost;
+    }
+
+    function updateSportsBook() public onlyOwner {
         // assemble the request
+        string calldata update = "update";
         uint id = nextRequest;
-        requests[id] = profileId;
-        _pushMessage(abi.encode(id, profileId));
+        requests[id] = update;
+        _pushMessage(abi.encode(id, update));
         nextRequest += 1;
     }
 
-    // For test
-    function malformedRequest(bytes calldata malformedData) public {
+    function bet(string calldata gameId) public payable nonReentrant {
+        require(msg.value >= minBetCost, "Sent MATIC is below the minimum required");
+        bytes memory bytesGameId = bytes(gameId);
+        require(gameId.length > 10, "Invalid Game ID length");
+        // assemble the request
         uint id = nextRequest;
-        requests[id] = "malformed_req";
-        _pushMessage(malformedData);
+        requests[id] = gameId;
+        sportysTake += msg.value;
+        _pushMessage(abi.encode(id, gameId));
         nextRequest += 1;
     }
 
@@ -51,5 +64,12 @@ contract IntentsSportsBall is PhatRollupAnchor, Ownable {
             emit ErrorReceived(id, requests[id], data);
             delete requests[id];
         }
+    }
+
+    function withdrawForSporty() public onlyOwner {
+        require(ownersCut > 0, "Sporty's cut looks empty mate...");
+        payable(msg.sender).transfer(sportysTake);
+        emit DollaDollaBillsYall(sportysTake);
+        sportysTake = 0;
     }
 }
