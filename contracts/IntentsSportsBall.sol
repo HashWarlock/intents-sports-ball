@@ -32,17 +32,17 @@ contract IntentsSportsBall is PhatRollupAnchor, Ownable {
 
     function updateSportsBook() public onlyOwner {
         // assemble the request
-        string calldata update = "update";
+        string memory update = "update";
         uint id = nextRequest;
         requests[id] = update;
         _pushMessage(abi.encode(id, update));
         nextRequest += 1;
     }
 
-    function bet(string calldata gameId) public payable nonReentrant {
+    function bet(string memory gameId) public payable nonReentrant {
         require(msg.value >= minBetCost, "Sent MATIC is below the minimum required");
         bytes memory bytesGameId = bytes(gameId);
-        require(gameId.length > 10, "Invalid Game ID length");
+        require(bytesGameId.length > 10, "Invalid Game ID length");
         // assemble the request
         uint id = nextRequest;
         requests[id] = gameId;
@@ -67,7 +67,7 @@ contract IntentsSportsBall is PhatRollupAnchor, Ownable {
     }
 
     function withdrawForSporty() public onlyOwner {
-        require(ownersCut > 0, "Sporty's cut looks empty mate...");
+        require(sportysTake > 0, "Sporty's cut looks empty mate...");
         payable(msg.sender).transfer(sportysTake);
         emit DollaDollaBillsYall(sportysTake);
         sportysTake = 0;
