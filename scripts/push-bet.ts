@@ -13,7 +13,7 @@ async function main() {
     }
     const consumer = IntentsSportsBall.attach(consumerSC);
     console.log("Pushing a request...");
-    await consumer.connect(deployer).request("bf8ec4081bb20755f5aa26aed3cc1d3a");
+    await consumer.connect(deployer).bet("bf8ec4081bb20755f5aa26aed3cc1d3a");
     consumer.on("ResponseReceived", async (reqId: number, pair: string, value: string) => {
         console.info("Received event [ResponseReceived]:");
         console.info(reqId, pair, value)
